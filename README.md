@@ -20,7 +20,7 @@ Once the data is available in RedPanda cluster , we can stream it using Apache F
 
 5) Next step is to start the opensky kafka connecter , to do this we need the below config changes
 
-Update the *plugin.path* to the location of the build output from step #4 above
+- Update the *plugin.path* to the location of the build output from step #4 above
 ```
 offset.storage.file.filename=/tmp/connect.offsets
 # Flush much faster than normal, which is useful for testing/debugging
@@ -37,6 +37,49 @@ offset.flush.interval.ms=10000
 # plugin.path=/usr/local/share/java,/usr/local/share/kafka/plugins,/opt/connectors,
 plugin.path=/Users/xyz/kafka-connect-opensky-master/build/distributions
 ```
+- Update the Redpanda cluster (sink) and Opensky (source) . Make sure you update the username and password for opensky that you created in step #2
+
+```
+connector.class=com.github.nbuesing.kafka.connect.opensky.OpenSkySourceConnector
+
+name=opensky
+tasks.max=1
+topic=flights_json2
+
+key.converter=org.apache.kafka.connect.storage.StringConverter
+
+value.converter=org.apache.kafka.connect.json.JsonConverter
+value.converter.schemas.enable=false
+
+#value.converter=io.confluent.connect.avro.AvroConverter
+#value.converter.schema.registry.url=http://localhost:8081
+
+interval=900
+
+#bounding.boxes=-90.0 0.0 -180.0 0.0, 0.0 90.0 -180.0 0.0, -90.0 0.0 0.0 180.0, 0.0 90.0 0.0 180.0
+bounding.boxes=45.8389 47.8229 5.9962 10.5226 , 24.396308 49.384358 -124.848974 -66.885444
+#bounding.boxes=45.8389 47.8229 5.9962 10.5226
+#offset.storage.file.filename=/tmp/converter.offsets
+
+#opensky.url=http://localhost:9999/api
+opensky.url=https://opensky-network.org/api/
+
+opensky.timeout.connect=30s
+opensky.timeout.read=30s
+opensky.username=<username>
+opensky.password=<password>
+
+transforms=flatten,rename
+
+transforms.flatten.type=org.apache.kafka.connect.transforms.Flatten$Value
+transforms.flatten.delimiter=_
+
+transforms.rename.type=org.apache.kafka.connect.transforms.ReplaceField$Value
+transforms.rename.renames=location_lat:latitude,location_lon:longitude
+
+
+```
+
 7) Create single node RedPanda Kafka broker as shown below
 
 ```
