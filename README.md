@@ -109,3 +109,47 @@ Download the respective client from https://github.com/redpanda-data/console/rel
 ./redpanda-console -config.filepath=./rp-client.yaml
 
 ```
+11) You can access the Flink management cosole at **http://localhost:8081**
+12) Once you verify the data exists on the topic , now it is time to execute the SQL on the **streaming data**
+
+```
+docker exec -it flink-jobmanager-1 bash - ./bin/sql-client.sh
+```
+13) On the SQL console , first step is to create a table that matches the schema on the **flights_json2** data
+
+```
+-- create table
+CREATE TABLE opensky (
+    id STRING,
+    callsign STRING, 
+    originCountry STRING, 
+    timePosition BIGINT,
+    lastContact BIGINT, 
+    latitude DOUBLE, 
+    longitude DOUBLE, 
+    barometricAltitude DOUBLE, 
+    onGround BOOLEAN,
+    velocity DOUBLE,     
+    heading DOUBLE, 
+    verticalRate DOUBLE, 
+    geometricAltitude DOUBLE, 
+    squawk VARCHAR,
+    specialPurpose BOOLEAN,
+    positionSource VARCHAR,
+    timeltz AS TO_TIMESTAMP_LTZ(timePosition,3) ,
+    WATERMARK FOR timeltz AS timeltz - INTERVAL '1' SECOND
+) WITH (
+    'connector' = 'kafka',
+    'topic' = 'flights_json2',
+    'scan.startup.mode' = 'earliest-offset',
+    'properties.bootstrap.servers' = 'redpanda:29092',
+    'format' = 'json',
+    'properties.group.id' = 'opensky-grp-1'
+)
+```
+14) Finally we can run the queries on the data, below are few examples
+
+```
+simple select on data
+"select id , originCountry from opensky;"
+```
