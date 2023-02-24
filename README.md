@@ -80,10 +80,32 @@ transforms.rename.renames=location_lat:latitude,location_lon:longitude
 
 ```
 
-6) Run the Kafka connect using the below command , this should be run from the directory where you installed kafka (step #4)
+6) **Run the Kafka connect** using the below command , this should be run from the directory where you installed kafka (step #4)
 
 ```
  bin/connect-standalone config/connect-standalone.properties config/opensky-source.properties
 ```
 
-7) Before installing the RedPanda cluster , we will configure the Apache Flink connector . Unlike Kafka connect we will run Flink inside docker.
+7) Before installing the RedPanda cluster , we will configure the Apache Flink connector . Unlike Kafka connect we will run Flink inside docker, Since we are going to use Flink SQL we need to build a new image using the base flink image and install SQL connector plugin.
+
+```
+docker build <use the docker file in this repo> -t openskyflink
+```
+8) Now that we have the flink docker images are ready , you can use the docker compose file to **run Apache Flink & Red panda cluster** in docker.
+
+```
+Exceute the below command inside the folder where the docker-compose.yml file is present
+ " docker-compose up -d "
+```
+9) At this point we have all the 3 components running as below 
+- Red Panda cluster : Running inside docker 
+- OpenSky Kafka connecter : Running as a standalone app in the local machine
+- Apache Flink SQL : Running inside docker
+
+10) To access the RedPanda cluster we need to install the RedPanda Console , using which we can view the opensky events in the **flights_json2** topic
+
+```
+Download the respective client from https://github.com/redpanda-data/console/releases and run the below command
+./redpanda-console -config.filepath=./rp-client.yaml
+
+```
