@@ -80,18 +80,12 @@ transforms.rename.renames=location_lat:latitude,location_lon:longitude
 
 ```
 
-6) **Run the Kafka connect** using the below command , this should be run from the directory where you installed kafka (step #4)
-
-```
- bin/connect-standalone.sh config/connect-standalone.properties config/opensky-source.properties
-```
-
-7) Before installing the RedPanda cluster , we will configure the Apache Flink connector . Unlike Kafka connect we will run Flink inside docker, Since we are going to use Flink SQL we need to build a new image using the base flink image and install SQL connector plugin.
+6) Before installing the RedPanda cluster , we will configure the Apache Flink connector . Unlike Kafka connect we will run Flink inside docker, Since we are going to use Flink SQL we need to build a new image using the base flink image and install SQL connector plugin.
 
 ```
 docker build <use the docker file in this repo> -t openskyflink
 ```
-8) Now that we have the flink docker images are ready , you can use the docker compose file to **run Apache Flink & Red panda cluster** in docker.
+7) Now that we have the flink docker images are ready , you can use the docker compose file to **run Apache Flink & Red panda cluster** in docker.
 
 ```
 Exceute the below command inside the folder where the docker-compose.yml file is present
@@ -99,34 +93,38 @@ Exceute the below command inside the folder where the docker-compose.yml file is
 ```
 ![image](https://user-images.githubusercontent.com/64332344/221382713-699f8ad9-e43a-494d-bce4-cb1f38ada40b.png)
 
-```
-9) At this point we have all the 3 components running as below 
+8) At this point we have all the 3 components running as below 
 - Red Panda cluster : Running inside docker 
 - OpenSky Kafka connecter : Running as a standalone app in the local machine
 - Apache Flink SQL : Running inside docker
 
-9a) Use the below command to create the topic on the Red Panda Cluster
+9) Use the below command to create the topic on the Red Panda Cluster
 
 ```
 docker exec -it redpanda-1 rpk topic create flights_json2 --brokers=localhost:9092
-```
-10) To access the RedPanda cluster we need to install the RedPanda Console , using which we can view the opensky events in the **flights_json2** topic
 
 ```
-Download the respective client from https://github.com/redpanda-data/console/releases and run the below command
+10) **Run the Kafka connect** using the below command , this should be run from the directory where you installed kafka (step #4). 
+
+```
+ bin/connect-standalone.sh config/connect-standalone.properties config/opensky-source.properties
+```
+11)  Install RedPanda Console , to view the opensky events in the **flights_json2** topic loaded by the kafka connector. Download the respective client binaries from https://github.com/redpanda-data/console/releases and run the below command
+
+```
 ./redpanda-console -config.filepath=./rp-client.yaml
 
 ```
-![image](https://user-images.githubusercontent.com/64332344/221382819-567900a8-924b-4028-b956-1e73b6964d2d.png)
+
 ![image](https://user-images.githubusercontent.com/64332344/221383009-193a3ce1-3192-4290-822d-0dacfd323389.png)
 
-11) You can access the Flink management cosole at **http://localhost:8081**
-12) Once you verify the data exists on the topic , now it is time to execute the SQL on the **streaming data**
+12) You can access the Flink management cosole at **http://localhost:8081**
+13) Once you verify the data exists on the topic , now it is time to execute the SQL on the **streaming data**
 
 ```
 docker exec -it flink-jobmanager-1 bash - ./bin/sql-client.sh
 ```
-13) On the SQL console , first step is to create a table that matches the schema on the **flights_json2** data
+14) On the SQL console , first step is to create a table that matches the schema on the **flights_json2** data
 
 ```
 -- create table
@@ -158,7 +156,7 @@ CREATE TABLE opensky (
     'properties.group.id' = 'opensky-grp-1'
 )
 ```
-14) Finally we can run the queries on the data, below are few examples
+15) Finally we can run the queries on the data, below are few examples
 
 ```
 simple select on data
