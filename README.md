@@ -1,4 +1,4 @@
-# datastreaming
+# Datastreaming Query example 
 Apache Flink data streaming using Kafka/RedPanda . In this example we will consume the sample airtraffic data using opensky api and publish it to 'redpanda' cluster thru kafka connect .
 
 Once the data is available in RedPanda cluster , we can stream it using Apache Flink and write Spark SQL to do stream analytics
