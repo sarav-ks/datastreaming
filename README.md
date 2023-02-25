@@ -120,7 +120,6 @@ Download the respective client from https://github.com/redpanda-data/console/rel
 ![image](https://user-images.githubusercontent.com/64332344/221382819-567900a8-924b-4028-b956-1e73b6964d2d.png)
 ![image](https://user-images.githubusercontent.com/64332344/221383009-193a3ce1-3192-4290-822d-0dacfd323389.png)
 
-
 11) You can access the Flink management cosole at **http://localhost:8081**
 12) Once you verify the data exists on the topic , now it is time to execute the SQL on the **streaming data**
 
