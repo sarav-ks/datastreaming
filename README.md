@@ -83,7 +83,7 @@ transforms.rename.renames=location_lat:latitude,location_lon:longitude
 6) **Run the Kafka connect** using the below command , this should be run from the directory where you installed kafka (step #4)
 
 ```
- bin/connect-standalone config/connect-standalone.properties config/opensky-source.properties
+ bin/connect-standalone.sh config/connect-standalone.properties config/opensky-source.properties
 ```
 
 7) Before installing the RedPanda cluster , we will configure the Apache Flink connector . Unlike Kafka connect we will run Flink inside docker, Since we are going to use Flink SQL we need to build a new image using the base flink image and install SQL connector plugin.
@@ -96,6 +96,9 @@ docker build <use the docker file in this repo> -t openskyflink
 ```
 Exceute the below command inside the folder where the docker-compose.yml file is present
  " docker-compose up -d "
+```
+![image](https://user-images.githubusercontent.com/64332344/221382713-699f8ad9-e43a-494d-bce4-cb1f38ada40b.png)
+
 ```
 9) At this point we have all the 3 components running as below 
 - Red Panda cluster : Running inside docker 
@@ -114,6 +117,10 @@ Download the respective client from https://github.com/redpanda-data/console/rel
 ./redpanda-console -config.filepath=./rp-client.yaml
 
 ```
+![image](https://user-images.githubusercontent.com/64332344/221382819-567900a8-924b-4028-b956-1e73b6964d2d.png)
+![image](https://user-images.githubusercontent.com/64332344/221383009-193a3ce1-3192-4290-822d-0dacfd323389.png)
+
+
 11) You can access the Flink management cosole at **http://localhost:8081**
 12) Once you verify the data exists on the topic , now it is time to execute the SQL on the **streaming data**
 
