@@ -118,12 +118,16 @@ docker exec -it redpanda-1 rpk topic create flights_json2 --brokers=localhost:90
 
 ![image](https://user-images.githubusercontent.com/64332344/221383009-193a3ce1-3192-4290-822d-0dacfd323389.png)
 
-12) You can access the Flink management cosole at **http://localhost:8081**
+12) You can access the Flink management cosole at **http://localhost:8081**. 
+![image](https://user-images.githubusercontent.com/64332344/221383482-fc32680d-8a5d-4f31-ab0c-ebffdd525e61.png)
+
 13) Once you verify the data exists on the topic , now it is time to execute the SQL on the **streaming data**
 
 ```
 docker exec -it flink-jobmanager-1 bash - ./bin/sql-client.sh
 ```
+![image](https://user-images.githubusercontent.com/64332344/221383557-80cac908-b0b2-4110-9280-cff2c1d00503.png)
+
 14) On the SQL console , first step is to create a table that matches the schema on the **flights_json2** data
 
 ```
@@ -156,9 +160,20 @@ CREATE TABLE opensky (
     'properties.group.id' = 'opensky-grp-1'
 )
 ```
+![image](https://user-images.githubusercontent.com/64332344/221383578-c3db7065-8e7d-48df-94d2-17d6e8b93748.png)
+
 15) Finally we can run the queries on the data, below are few examples
 
 ```
 simple select on data
 "select id , originCountry from opensky;"
 ```
+16) Streaming query example ,
+
+```
+SELECT TUMBLE_START(timeltz, INTERVAL '10' MINUTE), COUNT(DISTINCT callsign)
+FROM opensky
+where originCountry = 'United States' and callsign like 'UA%' 
+GROUP BY TUMBLE(timeltz, INTERVAL '10' MINUTE);
+```
+![image](https://user-images.githubusercontent.com/64332344/221383621-5c8cf33e-5c6a-4a5c-a86d-43df87f46127.png)
