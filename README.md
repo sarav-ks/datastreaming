@@ -102,6 +102,11 @@ Exceute the below command inside the folder where the docker-compose.yml file is
 - OpenSky Kafka connecter : Running as a standalone app in the local machine
 - Apache Flink SQL : Running inside docker
 
+9a) Use the below command to create the topic on the Red Panda Cluster
+
+```
+docker exec -it redpanda-1 rpk topic create flights_json2 --brokers=localhost:9092
+```
 10) To access the RedPanda cluster we need to install the RedPanda Console , using which we can view the opensky events in the **flights_json2** topic
 
 ```
